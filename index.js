@@ -36,6 +36,7 @@ async function run() {
         res.status(500).send('Internal Server Error');
       }
     });
+    
 
     // Start the server after setting up routes and connecting to MongoDB
     app.listen(port, () => {
