@@ -8,10 +8,9 @@
     ],
     "routes": [
         {
-            "src": "/[^.]+",
-            "dest": "/",
-            "status": 200,
-            "source": "/(.*)", "destination": "/index.html",
+            
+            "source": "/(.*)", 
+            "destination": "/index.html",
             "methods": ["GET","POST", "PATCH", "DELETE", "OPTIONS" ]
              
         }
