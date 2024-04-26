@@ -27,6 +27,8 @@ async function run() {
 
     const resortDataCollection = client.db("rciLastCallsDB").collection("resorts");
 
+
+    // Get all resorts Data from MongoDB Database
     app.get('/resorts', async (req, res) => {
       try {
         const result = await resortDataCollection.find().toArray();
@@ -37,6 +39,18 @@ async function run() {
       }
     });
     
+    //Posting resort data to mongoDB database
+    app.post('/resorts', async (req, res) => {
+      try {
+        const resort = req.body;
+        console.log(resort);
+        const result = await resortDataCollection.insertOne(resort);
+        res.send(result);
+      } catch (error) {
+        console.error('Error adding resort data:', error);
+        res.status(500).send('Internal Server Error');
+      }
+    })
 
     // Start the server after setting up routes and connecting to MongoDB
     app.listen(port, () => {
