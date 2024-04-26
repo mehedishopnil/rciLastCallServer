@@ -10,7 +10,9 @@
         {
             "src": "/(.*)",
             "dest": "/",
-            "methods": ["GET","POST", "PATCH", "DELETE", "OPTIONS" ]
+            "source": "/(.*)", "destination": "/index.html",
+            "methods": ["GET","POST", "PATCH", "DELETE", "OPTIONS" ],
+             
         }
     ]
 }
