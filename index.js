@@ -3,6 +3,8 @@ const app = express();
 const cors = require('cors');
 require('dotenv').config();
 const { MongoClient, ServerApiVersion } = require('mongodb');
+const path = require('path');
+
 const port = process.env.PORT || 5000;
 
 app.use(cors());
@@ -27,7 +29,6 @@ async function run() {
 
     const resortDataCollection = client.db("rciLastCallsDB").collection("resorts");
 
-
     // Get all resorts Data from MongoDB Database
     app.get('/resorts', async (req, res) => {
       try {
@@ -39,7 +40,7 @@ async function run() {
       }
     });
     
-    //Posting resort data to mongoDB database
+    // Posting resort data to MongoDB database
     app.post('/resorts', async (req, res) => {
       try {
         const resort = req.body;
@@ -50,7 +51,15 @@ async function run() {
         console.error('Error adding resort data:', error);
         res.status(500).send('Internal Server Error');
       }
-    })
+    });
+
+    // Serve static files
+    app.use(express.static(path.join(__dirname, 'client/build')));
+
+    // Serve main HTML file for all other routes
+    app.get('*', (req, res) => {
+      res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+    });
 
     // Start the server after setting up routes and connecting to MongoDB
     app.listen(port, () => {
@@ -62,8 +71,3 @@ async function run() {
 }
 
 run().catch(console.dir);
-
-app.get('/', (req, res) => {
-  res.send('RCI Last Call server is running');
-});
-
