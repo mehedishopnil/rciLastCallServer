@@ -49,21 +49,14 @@ async function run() {
       }
     });
 
-    // Search resorts by location, resort_ID, or place_name
-    app.get('/resorts/search', async (req, res) => {
-      const searchTerm = req.query.key;
+    // Get all resort data without pagination
+    app.get('/all-resorts', async (req, res) => {
       try {
-        const searchResults = await resortDataCollection.find({
-          $or: [
-            { location: { $regex: searchTerm, $options: 'i' } },
-            { resort_ID: { $regex: searchTerm, $options: 'i' } },
-            { place_name: { $regex: searchTerm, $options: 'i' } }
-          ]
-        }).toArray();
-        res.send(searchResults);
+        const resorts = await resortDataCollection.find().toArray();
+        res.send(resorts);
       } catch (error) {
-        console.error('Error fetching search results:', error);
-        res.status(404).send('Search Not Found');
+        console.error("Error fetching all resort data:", error);
+        res.status(500).send("Internal Server Error");
       }
     });
 
