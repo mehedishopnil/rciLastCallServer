@@ -8,8 +8,6 @@ const { MongoClient, ServerApiVersion } = require("mongodb");
 app.use(cors());
 app.use(express.json());
 
-console.log(process.env.DB_USER); // Logs DB username for debugging (optional)
-console.log(process.env.DB_PASS); // Logs DB password for debugging (optional)
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.5eoqrw2.mongodb.net/?retryWrites=true&w=majority`;
 
@@ -27,6 +25,7 @@ async function run() {
 
     const resortDataCollection = client.db("rciLastCallsDB").collection("resorts");
     const usersCollection = client.db("rciLastCallsDB").collection("users");
+    const bookingsCollection = client.db("rciLastCallsDB").collection("bookings");
 
     // Get paginated and filtered resorts data from MongoDB Database
     app.get("/resorts", async (req, res) => {
@@ -105,6 +104,39 @@ app.get('/users', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+
+
+//Bookings
+
+    // Posting Bookings data to MongoDB database
+    app.post("/bookings", async (req, res) => {
+      try {
+        const resort = req.body;
+        console.log(resort); // Logs posted resort data for debugging (optional)
+        const result = await bookingsCollection.insertOne(resort);
+        res.send(result);
+      } catch (error) {
+        console.error("Error adding resort data:", error);
+        res.status(500).send("Internal Server Error");
+      }
+    });
+
+ // GET endpoint to fetch user data by email
+app.get('/bookings', async (req, res) => {
+  const { email } = req.query;
+
+  try {
+    const user = await bookingsCollection.findOne({ email: email });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 
 
     // Ping the database
