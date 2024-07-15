@@ -26,6 +26,7 @@ async function run() {
     await client.connect();
 
     const resortDataCollection = client.db("rciLastCallsDB").collection("resorts");
+    const usersCollection = client.db("rciLastCallsDB").collection("users");
 
     // Get paginated and filtered resorts data from MongoDB Database
     app.get("/resorts", async (req, res) => {
@@ -49,6 +50,7 @@ async function run() {
       }
     });
 
+
     // Get all resort data without pagination
     app.get('/all-resorts', async (req, res) => {
       try {
@@ -59,6 +61,7 @@ async function run() {
         res.status(500).send("Internal Server Error");
       }
     });
+
 
     // Posting resort data to MongoDB database
     app.post("/resorts", async (req, res) => {
@@ -72,6 +75,37 @@ async function run() {
         res.status(500).send("Internal Server Error");
       }
     });
+
+
+    // Posting Users data to MongoDB database
+    app.post("/users", async (req, res) => {
+      try {
+        const resort = req.body;
+        console.log(resort); // Logs posted resort data for debugging (optional)
+        const result = await usersCollection.insertOne(resort);
+        res.send(result);
+      } catch (error) {
+        console.error("Error adding resort data:", error);
+        res.status(500).send("Internal Server Error");
+      }
+    });
+
+ // GET endpoint to fetch user data by email
+app.get('/users', async (req, res) => {
+  const { email } = req.query;
+
+  try {
+    const user = await usersCollection.findOne({ email: email });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    res.json(user);
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 
     // Ping the database
     await client.db("admin").command({ ping: 1 });
