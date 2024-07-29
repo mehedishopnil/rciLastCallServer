@@ -109,6 +109,17 @@ app.get('/users', async (req, res) => {
   }
 });
 
+// Get all user data without pagination
+app.get('/all-users', async (req, res) => {
+  try {
+    const users = await usersCollection.find().toArray();
+    res.send(users);
+  } catch (error) {
+    console.error("Error fetching all user data:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 
 
 //Bookings
