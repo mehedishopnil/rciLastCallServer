@@ -121,6 +121,45 @@ app.get('/all-users', async (req, res) => {
 });
 
 
+// Update user role to admin
+app.patch('/update-user', async (req, res) => {
+  const { email, isAdmin } = req.body;
+
+  try {
+    // Ensure that email and isAdmin are provided
+    if (!email || typeof isAdmin !== 'boolean') {
+      console.error("Validation failed: Email or isAdmin status is missing");
+      return res.status(400).send("Email and isAdmin status are required");
+    }
+
+    // Debugging: Log the email and isAdmin
+    console.log(`Updating user: ${email}, isAdmin: ${isAdmin}`);
+
+    // Update user role
+    const result = await usersCollection.updateOne(
+      { email: email },
+      { $set: { isAdmin: isAdmin } }
+    );
+
+    // Debugging: Log the result of the update operation
+    console.log(`Update result: ${JSON.stringify(result)}`);
+
+    if (result.modifiedCount === 0) {
+      console.error("User not found or role not updated");
+      return res.status(404).send("User not found or role not updated");
+    }
+
+    res.send({ success: true, message: "User role updated successfully" });
+  } catch (error) {
+    console.error("Error updating user role:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
+
+
+
+
 
 //Bookings
 
