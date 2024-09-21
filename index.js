@@ -158,6 +158,40 @@ app.patch('/update-user', async (req, res) => {
 
 
 
+// Update or add user info (any incoming data)
+app.patch('/update-user-info', async (req, res) => {
+  const { email, ...updatedData } = req.body;
+
+  try {
+    if (!email) {
+      return res.status(400).send("Email is required");
+    }
+
+    // Debugging: Log the data being updated
+    console.log(`Updating user with email: ${email}`);
+    console.log(`Data to be updated: ${JSON.stringify(updatedData)}`);
+
+    // Update user info by email, push incoming data to the existing document
+    const result = await usersCollection.updateOne(
+      { email: email },  // Query by email
+      { $set: updatedData } // Set new data without checking specific fields
+    );
+
+    // Debugging: Log the result of the update operation
+    console.log(`Update result: ${JSON.stringify(result)}`);
+
+    if (result.modifiedCount === 0) {
+      console.error("User not found or no changes were made");
+      return res.status(404).send("User not found or no changes were made");
+    }
+
+    res.send({ success: true, message: "User info updated successfully" });
+  } catch (error) {
+    console.error("Error updating user info:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
+
 
 
 
